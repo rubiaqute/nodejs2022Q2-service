@@ -53,4 +53,20 @@ export class TracksService {
     if (isSuccess) this.tracks = this.tracks.filter((el) => el.id !== id);
     return isSuccess;
   }
+
+  deleteArtist(artistId: string) {
+    this.tracks.forEach((el) => {
+      if (el.artistId === artistId) {
+        el.artistId = null;
+      }
+    });
+  }
+
+  deleteAlbum(albumId: string) {
+    this.tracks.forEach((el) => {
+      if (el.albumId === albumId) {
+        el.albumId = null;
+      }
+    });
+  }
 }
