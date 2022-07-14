@@ -8,5 +8,6 @@ import { TracksModule } from 'src/tracks/tracks.module';
   controllers: [ArtistsController],
   providers: [ArtistsService],
   imports: [AlbumsModule, TracksModule],
+  exports: [ArtistsService],
 })
 export class ArtistsModule {}
