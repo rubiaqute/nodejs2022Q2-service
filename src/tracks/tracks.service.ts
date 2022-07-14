@@ -58,6 +58,7 @@ export class TracksService {
     this.tracks.forEach((el) => {
       if (el.artistId === artistId) {
         el.artistId = null;
+        console.log(JSON.stringify(el));
       }
     });
   }

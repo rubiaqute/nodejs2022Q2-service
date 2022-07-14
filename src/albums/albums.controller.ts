@@ -9,26 +9,26 @@ import {
   HttpStatus,
   Put,
 } from '@nestjs/common';
-import { ArtistsService } from './artists.service';
-import { CreateArtistDto } from './dto/create-artist.dto';
-import { UpdateArtistDto } from './dto/update-artist.dto';
+import { AlbumsService } from './albums.service';
+import { CreateAlbumDto } from './dto/create-album.dto';
+import { UpdateAlbumDto } from './dto/update-album.dto';
 
-@Controller('artist')
-export class ArtistsController {
-  constructor(private readonly artistsService: ArtistsService) {}
+@Controller('album')
+export class AlbumsController {
+  constructor(private readonly albumsService: AlbumsService) {}
 
   @Post()
-  create(@Body() createArtistDto: CreateArtistDto) {
-    if (createArtistDto.name && createArtistDto.grammy !== null) {
-      const newArtist = this.artistsService.create(createArtistDto);
-      return newArtist;
+  create(@Body() createAlbumDto: CreateAlbumDto) {
+    if (createAlbumDto.name && createAlbumDto.year) {
+      const newAlbum = this.albumsService.create(createAlbumDto);
+      return newAlbum;
     }
     throw new HttpException('Some fields are missing', HttpStatus.BAD_REQUEST);
   }
 
   @Get()
   findAll() {
-    return this.artistsService.findAll();
+    return this.albumsService.findAll();
   }
 
   @Get(':id')
@@ -38,10 +38,10 @@ export class ArtistsController {
         params.id,
       )
     ) {
-      const artist = this.artistsService.findOne(params.id);
-      if (artist) return artist;
+      const album = this.albumsService.findOne(params.id);
+      if (album) return album;
       throw new HttpException(
-        'This artist does not exist',
+        'This album does not exist',
         HttpStatus.NOT_FOUND,
       );
     } else
@@ -49,19 +49,17 @@ export class ArtistsController {
   }
 
   @Put(':id')
-  update(@Param() params: any, @Body() updateArtistDto: UpdateArtistDto) {
+  update(@Param() params: any, @Body() updateAlbumDto: UpdateAlbumDto) {
     if (
       /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i.test(
         params.id,
       ) &&
-      updateArtistDto.name !== null &&
-      typeof updateArtistDto.name === 'string'
+      updateAlbumDto.name !== null &&
+      updateAlbumDto.year !== null &&
+      typeof updateAlbumDto.name === 'string'
     ) {
-      const artistUpdated = this.artistsService.update(
-        params.id,
-        updateArtistDto,
-      );
-      return artistUpdated;
+      const albumUpdated = this.albumsService.update(params.id, updateAlbumDto);
+      return albumUpdated;
     } else
       throw new HttpException('This id is not valid', HttpStatus.BAD_REQUEST);
   }
@@ -73,15 +71,15 @@ export class ArtistsController {
         params.id,
       )
     ) {
-      const isSuccess = this.artistsService.remove(params.id);
+      const isSuccess = this.albumsService.remove(params.id);
       if (!isSuccess) {
         throw new HttpException(
-          'This artist does not exist',
+          'This album does not exist',
           HttpStatus.NOT_FOUND,
         );
       } else {
         throw new HttpException(
-          'This artist was successfullly deleted',
+          'This album was successfullly deleted',
           HttpStatus.NO_CONTENT,
         );
       }
