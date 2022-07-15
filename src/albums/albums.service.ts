@@ -3,12 +3,11 @@ import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { Album } from './interfaces/album.interface';
 import { v4 as uuid } from 'uuid';
-import { TracksService } from 'src/tracks/tracks.service';
+import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
 export class AlbumsService {
-  private albums: Album[] = [];
-  constructor(private trackService: TracksService) {}
+  constructor(private dataBase: DatabaseService) {}
 
   create(createAlbumDto: CreateAlbumDto) {
     const newAlbum = {
@@ -17,20 +16,22 @@ export class AlbumsService {
       year: createAlbumDto.year,
       artistId: createAlbumDto.artistId,
     };
-    this.albums.push(newAlbum);
+    this.dataBase.addAlbum(newAlbum);
     return newAlbum;
   }
 
   findAll(): Album[] {
-    return this.albums;
+    return this.dataBase.albums;
   }
 
   findOne(id: string): Album {
-    return this.albums.find((album) => album.id === id);
+    return this.dataBase.albums.find((album) => album.id === id);
   }
 
   update(id: string, updateAlbumDto: UpdateAlbumDto) {
-    const albumForUpdate = this.albums.find((album) => album.id === id);
+    const albumForUpdate = this.dataBase.albums.find(
+      (album) => album.id === id,
+    );
 
     if (!albumForUpdate)
       throw new HttpException(
@@ -44,24 +45,15 @@ export class AlbumsService {
       artistId: updateAlbumDto.artistId || albumForUpdate.artistId,
     };
 
-    this.albums = this.albums.map((el) => (el.id === id ? updatedAlbum : el));
+    this.dataBase.updateAlbum(id, updatedAlbum);
     return updatedAlbum;
   }
 
   remove(id: string) {
-    const isSuccess = !!this.albums.find((artist) => artist.id === id);
+    const isSuccess = !!this.dataBase.albums.find((album) => album.id === id);
     if (isSuccess) {
-      this.albums = this.albums.filter((el) => el.id !== id);
-      this.trackService.deleteAlbum(id);
+      this.dataBase.deleteAlbum(id);
     }
     return isSuccess;
-  }
-
-  deleteArtist(artistId: string) {
-    this.albums.forEach((el) => {
-      if (el.artistId === artistId) {
-        el.artistId = null;
-      }
-    });
   }
 }

@@ -3,16 +3,11 @@ import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { Artist } from './interfaces/artist.interface';
 import { v4 as uuid } from 'uuid';
-import { TracksService } from 'src/tracks/tracks.service';
-import { AlbumsService } from 'src/albums/albums.service';
+import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
 export class ArtistsService {
-  private artists: Artist[] = [];
-  constructor(
-    private trackService: TracksService,
-    private albumsService: AlbumsService,
-  ) {}
+  constructor(private dataBase: DatabaseService) {}
 
   create(createArtistDto: CreateArtistDto) {
     const newArtist = {
@@ -20,20 +15,22 @@ export class ArtistsService {
       name: createArtistDto.name,
       grammy: createArtistDto.grammy,
     };
-    this.artists.push(newArtist);
+    this.dataBase.addArtist(newArtist);
     return newArtist;
   }
 
   findAll(): Artist[] {
-    return this.artists;
+    return this.dataBase.artists;
   }
 
   findOne(id: string): Artist {
-    return this.artists.find((artist) => artist.id === id);
+    return this.dataBase.artists.find((artist) => artist.id === id);
   }
 
   update(id: string, updateArtistDto: UpdateArtistDto) {
-    const artistForUpdate = this.artists.find((artist) => artist.id === id);
+    const artistForUpdate = this.dataBase.artists.find(
+      (artist) => artist.id === id,
+    );
 
     if (!artistForUpdate)
       throw new HttpException(
@@ -45,19 +42,16 @@ export class ArtistsService {
       name: updateArtistDto.name || artistForUpdate.name,
       grammy: updateArtistDto.grammy,
     };
-
-    this.artists = this.artists.map((el) =>
-      el.id === id ? updatedArtist : el,
-    );
+    this.dataBase.updateArtist(id, updatedArtist);
     return updatedArtist;
   }
 
   remove(id: string) {
-    const isSuccess = !!this.artists.find((artist) => artist.id === id);
+    const isSuccess = !!this.dataBase.artists.find(
+      (artist) => artist.id === id,
+    );
     if (isSuccess) {
-      this.artists = this.artists.filter((el) => el.id !== id);
-      this.trackService.deleteArtist(id);
-      this.albumsService.deleteArtist(id);
+      this.dataBase.deleteArtist(id);
     }
     return isSuccess;
   }
