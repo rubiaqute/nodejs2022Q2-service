@@ -1,0 +1,40 @@
+services:
+  nodejs2022q2-service:
+    restart: always
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+      - PORT=${PORT}
+    ports:
+      - "3001:${PORT}"
+    env_file:
+      - .env
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - postgresql
+    networks: 
+      - app    
+  postgresql:
+    build:
+      context: .
+      dockerfile: ./postgresql/Dockerfile
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_DB: ${DB_DATABASE_NAME}
+      PG_DATA: /var/lib/postgresql/data
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    networks: 
+      - app
+networks:
+    app:
+        name: app
+        driver: bridge
+volumes:
+  pgdata:
