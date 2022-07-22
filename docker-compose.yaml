@@ -4,32 +4,32 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-      args:
-      - PORT=${PORT}
     ports:
-      - "3001:${PORT}"
+      - "${PORT}:${PORT}"
     env_file:
       - .env
     volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
+      - .:/usr/src/nodejs2022q2-service
+      - /usr/src/nodejs2022q2-service/node_modules
     depends_on:
       - postgresql
     networks: 
       - app    
   postgresql:
+    container_name: postgres
     build:
       context: .
       dockerfile: ./postgresql/Dockerfile
     environment:
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_USER: ${DB_USERNAME}
-      POSTGRES_DB: ${DB_DATABASE_NAME}
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+      POSTGRES_USER: "${DB_USERNAME}"
+      POSTGRES_DB: "${DB_NAME}"
+      POSTGRES_DB: "localhost"
       PG_DATA: /var/lib/postgresql/data
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
-      - 5432:5432
+      - "${DB_PORT}:${DB_PORT}"
     networks: 
       - app
 networks:
@@ -38,3 +38,4 @@ networks:
         driver: bridge
 volumes:
   pgdata:
+  nodejs2022q2-service:
