@@ -1,37 +1,39 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
-import { Album } from './interfaces/album.interface';
 import { v4 as uuid } from 'uuid';
-import { DatabaseService } from 'src/database/database.service';
+import { Album as AlbumBase } from 'src/entities/Album';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AlbumsService {
-  constructor(private dataBase: DatabaseService) {}
+  constructor(
+    @InjectRepository(AlbumBase)
+    private albumsRepository: Repository<AlbumBase>,
+  ) {}
 
   create(createAlbumDto: CreateAlbumDto) {
-    const newAlbum = {
-      id: uuid(),
-      name: createAlbumDto.name,
-      year: createAlbumDto.year,
-      artistId: createAlbumDto.artistId,
-    };
-    this.dataBase.addAlbum(newAlbum);
+    const newAlbum = new AlbumBase();
+    newAlbum.id = uuid();
+    newAlbum.name = createAlbumDto.name;
+    newAlbum.year = createAlbumDto.year;
+    newAlbum.artistId = createAlbumDto.artistId;
+
+    this.albumsRepository.save(newAlbum);
     return newAlbum;
   }
 
-  findAll(): Album[] {
-    return this.dataBase.albums;
+  async findAll(): Promise<AlbumBase[]> {
+    return await this.albumsRepository.find();
   }
 
-  findOne(id: string): Album {
-    return this.dataBase.albums.find((album) => album.id === id);
+  async findOne(id: string): Promise<AlbumBase> {
+    return await this.albumsRepository.findOneBy({ id });
   }
 
-  update(id: string, updateAlbumDto: UpdateAlbumDto) {
-    const albumForUpdate = this.dataBase.albums.find(
-      (album) => album.id === id,
-    );
+  async update(id: string, updateAlbumDto: UpdateAlbumDto) {
+    const albumForUpdate = await this.albumsRepository.findOneBy({ id });
 
     if (!albumForUpdate)
       throw new HttpException(
@@ -45,14 +47,14 @@ export class AlbumsService {
       artistId: updateAlbumDto.artistId || albumForUpdate.artistId,
     };
 
-    this.dataBase.updateAlbum(id, updatedAlbum);
+    this.albumsRepository.save(updatedAlbum);
     return updatedAlbum;
   }
 
-  remove(id: string) {
-    const isSuccess = !!this.dataBase.albums.find((album) => album.id === id);
+  async remove(id: string) {
+    const isSuccess = !!(await this.albumsRepository.findOneBy({ id }));
     if (isSuccess) {
-      this.dataBase.deleteAlbum(id);
+      this.albumsRepository.delete(id);
     }
     return isSuccess;
   }
