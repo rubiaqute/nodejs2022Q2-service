@@ -8,23 +8,16 @@ import { AlbumsModule } from './albums/albums.module';
 import { FavouritesModule } from './favourites/favourites.module';
 import { DatabaseModule } from './database/database.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Album } from './entities/Album';
 import { ConfigModule } from '@nestjs/config';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
+import { Album } from './entities/Album';
+import { Artist } from './entities/Artist';
+import { Track } from './entities/Track';
 
 dotenv.config({
   path: path.join(__dirname, '.env'),
 });
-
-const {
-  POSTGRES_USER,
-  POSTGRES_PASSWORD,
-  POSTGRES_DB,
-  POSTGRES_PORT,
-  POSTGRES_HOST,
-} = process.env;
-const LOCAL_URL = `postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}`;
 
 @Module({
   imports: [
@@ -40,18 +33,18 @@ const LOCAL_URL = `postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_H
     DatabaseModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
-      port: 5432,
+      port: +process.env.DB_PORT,
       logging: true,
-      entities: [Album],
-      host: 'localhost',
-      database: 'db',
-      password: 'secret123',
-      username: 'postgres',
+      entities: [Album, Track, Artist],
+      host: 'postgres',
+      database: `${process.env.DB_NAME}`,
+      password: `${process.env.DB_PASSWORD}`,
+      username: `${process.env.DB_USERNAME}`,
       // url: (process.env.DATABASE_URL as string) || LOCAL_URL,
       synchronize: false,
       // entities: [User, Album, Artist, Favourite, Track],
       subscribers: [],
-      migrations: [],
+      migrations: [`${__dirname}/migrations/*.ts`],
     }),
   ],
   controllers: [AppController],
