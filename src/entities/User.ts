@@ -5,6 +5,7 @@ import {
   VersionColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  ValueTransformer,
 } from 'typeorm';
 
 @Entity()
@@ -21,10 +22,30 @@ export class User {
   @VersionColumn()
   version: number;
 
-  @CreateDateColumn()
+  @CreateDateColumn({
+    type: 'timestamp',
+    transformer: {
+      from(value) {
+        return +value;
+      },
+      to(value) {
+        return value;
+      },
+    },
+  })
   createdAt: number;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({
+    type: 'timestamp',
+    transformer: {
+      from(value) {
+        return +value;
+      },
+      to(value) {
+        return value;
+      },
+    },
+  })
   updatedAt: number;
 }
 // export default interface User {

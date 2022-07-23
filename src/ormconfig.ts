@@ -22,7 +22,7 @@ export const AppDataSource = new DataSource({
   synchronize: false,
   // entities: [User, Album, Artist, Favourite, Track],
   subscribers: [],
-  migrations: ['./migrations/*.ts'],
+  migrations: [`${__dirname}/migrations/*.ts`],
   migrationsRun: true,
 });
 AppDataSource.initialize()

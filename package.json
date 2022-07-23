@@ -22,7 +22,8 @@
     "docker:scan": "docker scan nodejs2022q2-service_nodejs2022q2-service",
     "typeorm:cli": "ts-node ./node_modules/typeorm/cli -f ./src/ormconfig.ts",
     "typeorm:migration": "ts-node ./node_modules/typeorm/cli migration:run -d ./src/ormconfig.ts",
-    "typeorm:generate": "ts-node ./node_modules/typeorm/cli migration:generate ./migrations/update-post-table -d ./src/ormconfig.ts"
+    "typeorm:generate": "ts-node ./node_modules/typeorm/cli migration:generate ./migrations/update-post-table -d ./src/ormconfig.ts",
+    "typeorm:create": "ts-node ./node_modules/typeorm/cli migration:create ./migrations/update-post-table"
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",
