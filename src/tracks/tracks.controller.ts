@@ -18,27 +18,27 @@ export class TracksController {
   constructor(private readonly tracksService: TracksService) {}
 
   @Post()
-  create(@Body() createTrackDto: CreateTrackDto) {
+  async create(@Body() createTrackDto: CreateTrackDto) {
     if (createTrackDto.duration && createTrackDto.name) {
-      const newTrack = this.tracksService.create(createTrackDto);
+      const newTrack = await this.tracksService.create(createTrackDto);
       return newTrack;
     }
     throw new HttpException('Some fields are missing', HttpStatus.BAD_REQUEST);
   }
 
   @Get()
-  findAll() {
-    return this.tracksService.findAll();
+  async findAll() {
+    return await this.tracksService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param() params: any) {
+  async findOne(@Param() params: any) {
     if (
       /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i.test(
         params.id,
       )
     ) {
-      const track = this.tracksService.findOne(params.id);
+      const track = await this.tracksService.findOne(params.id);
       if (track) return track;
       throw new HttpException(
         'This track does not exist',
@@ -49,7 +49,7 @@ export class TracksController {
   }
 
   @Put(':id')
-  update(@Param() params: any, @Body() updateTrackDto: UpdateTrackDto) {
+  async update(@Param() params: any, @Body() updateTrackDto: UpdateTrackDto) {
     if (
       /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i.test(
         params.id,
@@ -57,20 +57,23 @@ export class TracksController {
       updateTrackDto.name !== null &&
       updateTrackDto.duration !== null
     ) {
-      const trackUpdated = this.tracksService.update(params.id, updateTrackDto);
+      const trackUpdated = await this.tracksService.update(
+        params.id,
+        updateTrackDto,
+      );
       return trackUpdated;
     } else
       throw new HttpException('This id is not valid', HttpStatus.BAD_REQUEST);
   }
 
   @Delete(':id')
-  remove(@Param() params: any) {
+  async remove(@Param() params: any) {
     if (
       /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i.test(
         params.id,
       )
     ) {
-      const isSuccess = this.tracksService.remove(params.id);
+      const isSuccess = await this.tracksService.remove(params.id);
       if (!isSuccess) {
         throw new HttpException(
           'This track does not exist',

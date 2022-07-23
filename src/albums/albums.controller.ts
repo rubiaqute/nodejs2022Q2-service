@@ -18,7 +18,7 @@ export class AlbumsController {
   constructor(private readonly albumsService: AlbumsService) {}
 
   @Post()
-  create(@Body() createAlbumDto: CreateAlbumDto) {
+  async create(@Body() createAlbumDto: CreateAlbumDto) {
     if (createAlbumDto.name && createAlbumDto.year) {
       const newAlbum = this.albumsService.create(createAlbumDto);
       return newAlbum;
