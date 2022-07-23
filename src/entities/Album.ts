@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Artist } from './Artist';
 
 @Entity()
 export class Album {
@@ -13,6 +20,10 @@ export class Album {
 
   @Column({ type: 'uuid', nullable: true })
   artistId: string | null;
+
+  @OneToOne((type) => Artist, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @JoinColumn()
+  artist: Artist;
 }
 
 // export interface Track {

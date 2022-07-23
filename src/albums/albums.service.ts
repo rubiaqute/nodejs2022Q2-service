@@ -13,15 +13,15 @@ export class AlbumsService {
     private albumsRepository: Repository<AlbumBase>,
   ) {}
 
-  create(createAlbumDto: CreateAlbumDto) {
+  async create(createAlbumDto: CreateAlbumDto) {
     const newAlbum = new AlbumBase();
     newAlbum.id = uuid();
     newAlbum.name = createAlbumDto.name;
     newAlbum.year = createAlbumDto.year;
     newAlbum.artistId = createAlbumDto.artistId;
 
-    this.albumsRepository.save(newAlbum);
-    return newAlbum;
+    await this.albumsRepository.save(newAlbum);
+    return await this.albumsRepository.findOneBy({ id: newAlbum.id });
   }
 
   async findAll(): Promise<AlbumBase[]> {
@@ -41,20 +41,19 @@ export class AlbumsService {
         HttpStatus.NOT_FOUND,
       );
     const updatedAlbum = {
-      id: albumForUpdate.id,
       name: updateAlbumDto.name || albumForUpdate.name,
       year: updateAlbumDto.year || albumForUpdate.year,
       artistId: updateAlbumDto.artistId || albumForUpdate.artistId,
     };
 
-    this.albumsRepository.save(updatedAlbum);
-    return updatedAlbum;
+    await this.albumsRepository.update(id, updatedAlbum);
+    return await this.albumsRepository.findOneBy({ id });
   }
 
   async remove(id: string) {
     const isSuccess = !!(await this.albumsRepository.findOneBy({ id }));
     if (isSuccess) {
-      this.albumsRepository.delete(id);
+      await this.albumsRepository.delete(id);
     }
     return isSuccess;
   }

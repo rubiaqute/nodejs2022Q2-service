@@ -1,11 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import CreateUserDto from './dto/create-user.dto';
 import { v4 as uuid } from 'uuid';
-import User from './interfaces/user.interface';
 import { User as UserBase } from './../entities/User';
 import UpdatePasswordDto from './dto/update-password.dto';
 import { Repository } from 'typeorm';
-import { DatabaseService } from 'src/database/database.service';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
@@ -65,7 +63,7 @@ export class UsersService {
       password: receivedPasswords.newPassword,
     };
 
-    await this.usersRepository.save(updatedUser);
+    await this.usersRepository.update(id, updatedUser);
     return await this.usersRepository.findOneBy({ id });
   }
 }

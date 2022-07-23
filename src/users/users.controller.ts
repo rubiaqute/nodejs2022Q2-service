@@ -56,13 +56,13 @@ export class UsersController {
   }
 
   @Delete(':id')
-  deleteOne(@Param() params: any) {
+  async deleteOne(@Param() params: any) {
     if (
       /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i.test(
         params.id,
       )
     ) {
-      const isSuccess = this.usersService.deleteOne(params.id);
+      const isSuccess = await this.usersService.deleteOne(params.id);
       if (!isSuccess) {
         throw new HttpException(
           'This user does not exist',

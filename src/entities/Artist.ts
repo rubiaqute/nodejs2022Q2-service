@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from 'typeorm';
+import { Album } from './Album';
 
 @Entity()
 export class Artist {
@@ -8,6 +9,6 @@ export class Artist {
   @Column('text')
   name: string;
 
-  @Column('boolean')
+  @Column({ type: 'boolean', nullable: true })
   grammy: boolean;
 }

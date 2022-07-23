@@ -21,7 +21,7 @@ export class ArtistsService {
     newArtist.name = createArtistDto.name;
     newArtist.grammy = createArtistDto.grammy;
     await this.artistsRepository.save(newArtist);
-    return newArtist;
+    return await this.artistsRepository.findOneBy({ id: newArtist.id });
   }
 
   async findAll(): Promise<ArtistBase[]> {
@@ -41,18 +41,18 @@ export class ArtistsService {
         HttpStatus.NOT_FOUND,
       );
     const updatedArtist = {
-      id: artistForUpdate.id,
       name: updateArtistDto.name || artistForUpdate.name,
       grammy: updateArtistDto.grammy,
     };
-    await this.artistsRepository.save(updatedArtist);
-    return updatedArtist;
+    await this.artistsRepository.update(id, updatedArtist);
+    return await this.artistsRepository.findOneBy({ id });
   }
 
   async remove(id: string) {
     const isSuccess = !!(await this.artistsRepository.findOneBy({ id }));
+    console.log(await this.artistsRepository.findOneBy({ id }));
     if (isSuccess) {
-      this.artistsRepository.delete(id);
+      await this.artistsRepository.delete(id);
     }
     return isSuccess;
   }
