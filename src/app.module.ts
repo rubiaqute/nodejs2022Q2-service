@@ -14,6 +14,7 @@ import * as path from 'path';
 import { Album } from './entities/Album';
 import { Artist } from './entities/Artist';
 import { Track } from './entities/Track';
+import { User } from './entities/User';
 
 dotenv.config({
   path: path.join(__dirname, '.env'),
@@ -35,7 +36,7 @@ dotenv.config({
       type: 'postgres',
       port: +process.env.DB_PORT,
       logging: true,
-      entities: [Album, Track, Artist],
+      entities: [Album, Track, Artist, User],
       host: 'postgres',
       database: `${process.env.DB_NAME}`,
       password: `${process.env.DB_PASSWORD}`,
@@ -46,6 +47,12 @@ dotenv.config({
       subscribers: [],
       migrations: [`${__dirname}/migrations/*.ts`],
     }),
+    UsersModule,
+    TracksModule,
+    ArtistsModule,
+    AlbumsModule,
+    FavouritesModule,
+    DatabaseModule,
   ],
   controllers: [AppController],
   providers: [AppService],

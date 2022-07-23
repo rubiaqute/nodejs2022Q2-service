@@ -4,6 +4,7 @@ import * as path from 'path';
 import { DataSource } from 'typeorm';
 import { Artist } from './entities/Artist';
 import { Track } from './entities/Track';
+import { User } from './entities/User';
 
 dotenv.config({
   path: path.join(__dirname, '.env'),
@@ -13,7 +14,7 @@ export const AppDataSource = new DataSource({
   type: 'postgres',
   port: +process.env.DB_PORT,
   logging: true,
-  entities: [Album, Track, Artist],
+  entities: [Album, Track, Artist, User],
   host: 'localhost',
   database: `postgres`,
   password: `secret123`,

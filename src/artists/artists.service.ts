@@ -2,35 +2,38 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { Artist } from './interfaces/artist.interface';
+import { Artist as ArtistBase } from './../entities/Artist';
 import { v4 as uuid } from 'uuid';
 import { DatabaseService } from 'src/database/database.service';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class ArtistsService {
-  constructor(private dataBase: DatabaseService) {}
+  constructor(
+    @InjectRepository(ArtistBase)
+    private artistsRepository: Repository<ArtistBase>,
+  ) {}
 
-  create(createArtistDto: CreateArtistDto) {
-    const newArtist = {
-      id: uuid(),
-      name: createArtistDto.name,
-      grammy: createArtistDto.grammy,
-    };
-    this.dataBase.addArtist(newArtist);
+  async create(createArtistDto: CreateArtistDto) {
+    const newArtist = new ArtistBase();
+    newArtist.id = uuid();
+    newArtist.name = createArtistDto.name;
+    newArtist.grammy = createArtistDto.grammy;
+    await this.artistsRepository.save(newArtist);
     return newArtist;
   }
 
-  findAll(): Artist[] {
-    return this.dataBase.artists;
+  async findAll(): Promise<ArtistBase[]> {
+    return await this.artistsRepository.find();
   }
 
-  findOne(id: string): Artist {
-    return this.dataBase.artists.find((artist) => artist.id === id);
+  async findOne(id: string): Promise<ArtistBase> {
+    return await this.artistsRepository.findOneBy({ id });
   }
 
-  update(id: string, updateArtistDto: UpdateArtistDto) {
-    const artistForUpdate = this.dataBase.artists.find(
-      (artist) => artist.id === id,
-    );
+  async update(id: string, updateArtistDto: UpdateArtistDto) {
+    const artistForUpdate = await this.artistsRepository.findOneBy({ id });
 
     if (!artistForUpdate)
       throw new HttpException(
@@ -42,16 +45,14 @@ export class ArtistsService {
       name: updateArtistDto.name || artistForUpdate.name,
       grammy: updateArtistDto.grammy,
     };
-    this.dataBase.updateArtist(id, updatedArtist);
+    await this.artistsRepository.save(updatedArtist);
     return updatedArtist;
   }
 
-  remove(id: string) {
-    const isSuccess = !!this.dataBase.artists.find(
-      (artist) => artist.id === id,
-    );
+  async remove(id: string) {
+    const isSuccess = !!(await this.artistsRepository.findOneBy({ id }));
     if (isSuccess) {
-      this.dataBase.deleteArtist(id);
+      this.artistsRepository.delete(id);
     }
     return isSuccess;
   }

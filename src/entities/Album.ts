@@ -5,13 +5,13 @@ export class Album {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column('text')
   name: string;
 
-  @Column()
+  @Column('int')
   year: number;
 
-  @Column('uuid')
+  @Column({ type: 'uuid', nullable: true })
   artistId: string | null;
 }
 
