@@ -15,6 +15,20 @@ export class ArtistsService {
     private artistsRepository: Repository<ArtistBase>,
   ) {}
 
+  artistsF: string[] = [];
+
+  addToF(id: string) {
+    this.artistsF.push(id);
+  }
+
+  isInF(id: string) {
+    return this.artistsF.filter((el) => el === id);
+  }
+
+  delFromF(id: string) {
+    this.artistsF = this.artistsF.filter((el) => el !== id);
+  }
+
   async create(createArtistDto: CreateArtistDto) {
     const newArtist = new ArtistBase();
     newArtist.id = uuid();
@@ -53,6 +67,7 @@ export class ArtistsService {
     console.log(await this.artistsRepository.findOneBy({ id }));
     if (isSuccess) {
       await this.artistsRepository.delete(id);
+      this.delFromF(id);
     }
     return isSuccess;
   }

@@ -13,6 +13,20 @@ export class AlbumsService {
     private albumsRepository: Repository<AlbumBase>,
   ) {}
 
+  albumsF: string[] = [];
+
+  addToF(id: string) {
+    this.albumsF.push(id);
+  }
+
+  isInF(id: string) {
+    return this.albumsF.filter((el) => el === id);
+  }
+
+  delFromF(id: string) {
+    this.albumsF = this.albumsF.filter((el) => el !== id);
+  }
+
   async create(createAlbumDto: CreateAlbumDto) {
     const newAlbum = new AlbumBase();
     newAlbum.id = uuid();
@@ -54,6 +68,7 @@ export class AlbumsService {
     const isSuccess = !!(await this.albumsRepository.findOneBy({ id }));
     if (isSuccess) {
       await this.albumsRepository.delete(id);
+      this.delFromF(id);
     }
     return isSuccess;
   }

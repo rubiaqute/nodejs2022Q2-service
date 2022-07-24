@@ -14,6 +14,20 @@ export class TracksService {
     private tracksRepository: Repository<TrackBase>,
   ) {}
 
+  tracksF: string[] = [];
+
+  addToF(id: string) {
+    this.tracksF.push(id);
+  }
+
+  isInF(id: string) {
+    return this.tracksF.filter((el) => el === id);
+  }
+
+  delFromF(id: string) {
+    this.tracksF = this.tracksF.filter((el) => el !== id);
+  }
+
   async create(createTrackDto: CreateTrackDto) {
     const newTrack = {
       id: uuid(),
@@ -55,7 +69,10 @@ export class TracksService {
 
   async remove(id: string) {
     const isSuccess = !!(await this.tracksRepository.findOneBy({ id }));
-    if (isSuccess) await this.tracksRepository.delete(id);
+    if (isSuccess) {
+      await this.tracksRepository.delete(id);
+      this.delFromF(id);
+    }
     return isSuccess;
   }
 }

@@ -8,7 +8,7 @@ import { Track } from 'src/entities/Track';
 @Module({
   controllers: [TracksController],
   providers: [TracksService],
-  imports: [DatabaseModule, TypeOrmModule.forFeature([Track])],
+  imports: [TypeOrmModule.forFeature([Track])],
   exports: [TracksService],
 })
 export class TracksModule {}

@@ -7,8 +7,8 @@ import { FavoritesResponse } from './interfaces/favourites.interface';
 export class FavouritesService {
   constructor(private dataBase: DatabaseService) {}
 
-  findAll(): FavoritesResponse {
-    return this.dataBase.getFavourites();
+  async findAll(): Promise<FavoritesResponse> {
+    return await this.dataBase.getFavourites();
   }
 
   addTrack(trackId: string) {
