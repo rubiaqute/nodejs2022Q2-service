@@ -5,7 +5,6 @@ import {
   VersionColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  ValueTransformer,
 } from 'typeorm';
 
 @Entity()

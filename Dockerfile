@@ -8,4 +8,5 @@ EXPOSE ${PORT}
 RUN npm run prebuild
 RUN npm run build
 USER node
+RUN npm run typeorm:migration
 CMD [  "npm", "run", "start:dev" ]

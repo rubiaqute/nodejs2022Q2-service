@@ -14,7 +14,6 @@ export class UsersService {
   ) {}
 
   async create(user: CreateUserDto) {
-    const timestamp = Date.now();
     const newUser = new UserBase();
     newUser.id = uuid();
     newUser.login = user.login;
@@ -56,7 +55,6 @@ export class UsersService {
         HttpStatus.FORBIDDEN,
       );
 
-    const timestamp = Date.now();
     const updatedUser = {
       id: userForUpdate.id,
       login: userForUpdate.login,

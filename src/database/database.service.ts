@@ -50,8 +50,8 @@ export class DatabaseService {
   async getFavourites() {
     return {
       artists: await Promise.all(
-        this.artistsService.artistsF.map((el) =>
-          this.artistsService.findOne(el),
+        this.artistsService.artistsF.map(
+          async (el) => await this.artistsService.findOne(el),
         ),
       ),
       albums: await Promise.all(

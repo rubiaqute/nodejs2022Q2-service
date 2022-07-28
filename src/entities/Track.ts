@@ -1,10 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  OneToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { Album } from './Album';
 import { Artist } from './Artist';
 
@@ -16,19 +10,23 @@ export class Track {
   @Column('text')
   name: string;
 
+  @ManyToOne(() => Artist, (artist) => artist.id, {
+    nullable: true,
+    onDelete: 'SET NULL',
+    cascade: ['insert', 'update', 'remove'],
+  })
+  artist: string;
   @Column({ type: 'uuid', nullable: true })
   artistId: string | null;
 
-  @OneToOne((type) => Artist, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
-  @JoinColumn()
-  artist: Artist;
-
+  @ManyToOne(() => Album, (album) => album.id, {
+    nullable: true,
+    onDelete: 'SET NULL',
+    cascade: ['insert', 'update', 'remove'],
+  })
+  album: string;
   @Column({ type: 'uuid', nullable: true })
   albumId: string | null;
-
-  @OneToOne((type) => Album, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
-  @JoinColumn()
-  album: Album;
 
   @Column('int')
   duration: number;
