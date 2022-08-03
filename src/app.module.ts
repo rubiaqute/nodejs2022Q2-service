@@ -16,6 +16,7 @@ import { Artist } from './entities/Artist';
 import { Track } from './entities/Track';
 import { User } from './entities/User';
 import { Favourite } from './entities/Favourites';
+import { AuthModule } from './authorization/auth.module';
 
 dotenv.config({
   path: path.join(__dirname, '.env'),
@@ -33,6 +34,7 @@ dotenv.config({
     AlbumsModule,
     FavouritesModule,
     DatabaseModule,
+    AuthModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       port: +process.env.DB_PORT,

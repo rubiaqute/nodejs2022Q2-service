@@ -38,16 +38,50 @@ export class AuthService {
     }
     const payload = { login: userNeed.login, sub: userNeed.id };
     return {
-      access_token: this.jwtService.sign(payload, { expiresIn: '1h' }),
-      refresh_token: this.jwtService.sign(payload, { expiresIn: '24h' }),
+      accessToken: this.jwtService.sign(payload, { expiresIn: '1h' }),
+      refreshToken: this.jwtService.sign(payload, { expiresIn: '24h' }),
     };
   }
 
   async signUp(user: CreateUserDto) {
+    if (
+      !user.login ||
+      !user.password ||
+      typeof user.login !== 'string' ||
+      typeof user.password !== 'string'
+    ) {
+      throw new HttpException(
+        'The login or password are incorrect',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
     const passwordHashed = await bcrypt.hash(user.password, 10);
     return this.usersService.create({
       login: user.login,
       password: passwordHashed,
     });
+  }
+
+  async refresh(refreshToken: string) {
+    if (!refreshToken || typeof refreshToken !== 'string') {
+      throw new HttpException(
+        'The refreshToken is missing',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+    const isSucces = await this.jwtService.verify(refreshToken);
+    if (!isSucces) {
+      throw new HttpException(
+        'The refreshToken is invalid',
+        HttpStatus.FORBIDDEN,
+      );
+    } else {
+      const user = await this.usersService.findOne(isSucces.userId);
+      const payload = { login: user.login, sub: user.id };
+      return {
+        accessToken: this.jwtService.sign(payload, { expiresIn: '1h' }),
+        refreshToken: this.jwtService.sign(payload, { expiresIn: '24h' }),
+      };
+    }
   }
 }

@@ -9,14 +9,17 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/authorization/jwt-auth.guard';
 import CreateUserDto from './dto/create-user.dto';
 import UpdatePasswordDto from './dto/update-password.dto';
 import { UserEntity } from './interfaces/user.interface';
 import { UsersService } from './users.service';
 
 @Controller('user')
+@UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private usersService: UsersService) {}
 

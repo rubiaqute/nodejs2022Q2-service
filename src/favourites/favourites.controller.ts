@@ -6,11 +6,14 @@ import {
   HttpStatus,
   Param,
   Post,
+  UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/authorization/jwt-auth.guard';
 import { DatabaseService } from 'src/database/database.service';
 import { FavouritesService } from './favourites.service';
 
 @Controller('favs')
+@UseGuards(JwtAuthGuard)
 export class FavouritesController {
   constructor(
     private readonly favouritesService: FavouritesService,
