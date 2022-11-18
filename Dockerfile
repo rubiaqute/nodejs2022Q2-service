@@ -5,6 +5,7 @@ COPY .env.example .env
 RUN npm install && npm cache clean --force
 COPY . .
 EXPOSE ${PORT}
+RUN npm run prebuild
 RUN npm run build
 USER node
 CMD [  "npm", "run", "start:dev" ]

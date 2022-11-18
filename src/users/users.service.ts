@@ -1,48 +1,51 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import CreateUserDto from './dto/create-user.dto';
 import { v4 as uuid } from 'uuid';
-import User from './interfaces/user.interface';
+import { User as UserBase } from './../entities/User';
 import UpdatePasswordDto from './dto/update-password.dto';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class UsersService {
-  private users: User[] = [];
+  constructor(
+    @InjectRepository(UserBase)
+    private usersRepository: Repository<UserBase>,
+  ) {}
 
-  create(user: CreateUserDto) {
-    const timestamp = Date.now();
-    const newUser = {
-      id: uuid(),
-      login: user.login,
-      password: user.password,
-      version: 1,
-      createdAt: timestamp,
-      updatedAt: timestamp,
-    };
-    this.users.push(newUser);
-    return newUser;
+  async create(user: CreateUserDto) {
+    const newUser = new UserBase();
+    newUser.id = uuid();
+    newUser.login = user.login;
+    newUser.password = user.password;
+    await this.usersRepository.save(newUser);
+    return await this.usersRepository.findOneBy({ id: newUser.id });
   }
 
-  findAll(): User[] {
-    return this.users;
+  async findAll(): Promise<UserBase[]> {
+    return await this.usersRepository.find();
   }
 
-  findOne(id: string): User {
-    return this.users.find((user) => user.id === id);
+  async findOne(id: string): Promise<UserBase> {
+    return await this.usersRepository.findOneBy({ id });
   }
 
-  deleteOne(id: string): boolean {
-    const isSuccess = !!this.users.find((user) => user.id === id);
-    if (isSuccess) this.users = this.users.filter((el) => el.id !== id);
+  async deleteOne(id: string): Promise<boolean> {
+    const isSuccess = !!(await this.usersRepository.findOneBy({ id }));
+    if (isSuccess) this.usersRepository.delete(id);
     return isSuccess;
   }
 
-  updatePassword(id: string, receivedPasswords: UpdatePasswordDto): User {
+  async updatePassword(
+    id: string,
+    receivedPasswords: UpdatePasswordDto,
+  ): Promise<UserBase> {
     if (!receivedPasswords.newPassword || !receivedPasswords.oldPassword)
       throw new HttpException(
         'This old or new passwords are missing',
         HttpStatus.BAD_REQUEST,
       );
-    const userForUpdate = this.users.find((user) => user.id === id);
+    const userForUpdate = await this.usersRepository.findOneBy({ id });
 
     if (!userForUpdate)
       throw new HttpException('This user does not exist', HttpStatus.NOT_FOUND);
@@ -52,17 +55,13 @@ export class UsersService {
         HttpStatus.FORBIDDEN,
       );
 
-    const timestamp = Date.now();
     const updatedUser = {
       id: userForUpdate.id,
       login: userForUpdate.login,
       password: receivedPasswords.newPassword,
-      version: userForUpdate.version + 1,
-      createdAt: userForUpdate.createdAt,
-      updatedAt: timestamp,
     };
 
-    this.users = this.users.map((el) => (el.id === id ? updatedUser : el));
-    return updatedUser;
+    await this.usersRepository.update(id, updatedUser);
+    return await this.usersRepository.findOneBy({ id });
   }
 }
