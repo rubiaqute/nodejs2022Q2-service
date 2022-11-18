@@ -1,5 +1,12 @@
 # Home Library Service
 
+Для работы:
+1. Склонируйте репозиторий на локальный компьютер
+2. Выполните npm i
+3. Запустите сервер npm run start
+4. Для запуска тестов используйте команду npm run test
+
+
 ## Prerequisites
 
 - Git - [Download & Install Git](https://git-scm.com/downloads).
