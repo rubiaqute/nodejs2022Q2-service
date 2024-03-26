@@ -2,14 +2,33 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { Track } from './interfaces/track.interface';
+import { Track as TrackBase } from './../entities/Track';
 import { v4 as uuid } from 'uuid';
-import { DatabaseService } from 'src/database/database.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class TracksService {
-  constructor(private dataBase: DatabaseService) {}
+  constructor(
+    @InjectRepository(TrackBase)
+    private tracksRepository: Repository<TrackBase>,
+  ) {}
 
-  create(createTrackDto: CreateTrackDto) {
+  tracksF: string[] = [];
+
+  addToF(id: string) {
+    this.tracksF.push(id);
+  }
+
+  isInF(id: string) {
+    return this.tracksF.filter((el) => el === id);
+  }
+
+  delFromF(id: string) {
+    this.tracksF = this.tracksF.filter((el) => el !== id);
+  }
+
+  async create(createTrackDto: CreateTrackDto) {
     const newTrack = {
       id: uuid(),
       name: createTrackDto.name,
@@ -17,22 +36,20 @@ export class TracksService {
       albumId: createTrackDto.albumId,
       duration: createTrackDto.duration,
     };
-    this.dataBase.addTrack(newTrack);
-    return newTrack;
+    await this.tracksRepository.save(newTrack);
+    return await this.tracksRepository.findOneBy({ id: newTrack.id });
   }
 
-  findAll(): Track[] {
-    return this.dataBase.tracks;
+  async findAll(): Promise<Track[]> {
+    return await this.tracksRepository.find();
   }
 
-  findOne(id: string) {
-    return this.dataBase.tracks.find((track) => track.id === id);
+  async findOne(id: string) {
+    return await this.tracksRepository.findOneBy({ id });
   }
 
-  update(id: string, updateTrackDto: UpdateTrackDto) {
-    const trackForUpdate = this.dataBase.tracks.find(
-      (track) => track.id === id,
-    );
+  async update(id: string, updateTrackDto: UpdateTrackDto) {
+    const trackForUpdate = await this.tracksRepository.findOneBy({ id });
 
     if (!trackForUpdate)
       throw new HttpException(
@@ -40,20 +57,22 @@ export class TracksService {
         HttpStatus.NOT_FOUND,
       );
     const updatedTrack = {
-      id: trackForUpdate.id,
       name: updateTrackDto.name || trackForUpdate.name,
       artistId: updateTrackDto.artistId || trackForUpdate.artistId,
       albumId: updateTrackDto.albumId || trackForUpdate.albumId,
       duration: updateTrackDto.duration || trackForUpdate.duration,
     };
 
-    this.dataBase.updateTrack(id, updatedTrack);
-    return updatedTrack;
+    await this.tracksRepository.update(id, updatedTrack);
+    return await this.tracksRepository.findOneBy({ id });
   }
 
-  remove(id: string) {
-    const isSuccess = !!this.dataBase.tracks.find((track) => track.id === id);
-    if (isSuccess) this.dataBase.deleteTrack(id);
+  async remove(id: string) {
+    const isSuccess = !!(await this.tracksRepository.findOneBy({ id }));
+    if (isSuccess) {
+      await this.tracksRepository.delete(id);
+      this.delFromF(id);
+    }
     return isSuccess;
   }
 }

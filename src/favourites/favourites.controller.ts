@@ -18,48 +18,34 @@ export class FavouritesController {
   ) {}
 
   @Get()
-  findAll() {
-    return this.favouritesService.findAll();
+  async findAll() {
+    return await this.favouritesService.findAll();
   }
 
   @Post('/track/:id')
-  addTrackToFavs(@Param('id') id: string) {
+  async addTrackToFavs(@Param('id') id: string) {
     if (
       /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i.test(
         id,
       )
     ) {
-      const track = this.dataBase.tracks.find((el) => el.id === id);
-      if (track) {
-        this.favouritesService.addTrack(id);
-        throw new HttpException(
-          'This track was successfully added to favourites',
-          HttpStatus.CREATED,
-        );
-      }
-      throw new HttpException(
-        'This track does not exist',
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
+      await this.favouritesService.addTrack(id);
     } else
       throw new HttpException('This id is not valid', HttpStatus.BAD_REQUEST);
   }
 
   @Post('/album/:id')
-  addAlbumToFavs(@Param('id') id: string) {
+  async addAlbumToFavs(@Param('id') id: string) {
     if (
       /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i.test(
         id,
       )
     ) {
-      const album = this.dataBase.albums.find((el) => el.id === id);
-      if (album) {
-        this.favouritesService.addAlbum(id);
-        throw new HttpException(
-          'This album was successfully added to favourites',
-          HttpStatus.CREATED,
-        );
-      }
+      await this.favouritesService.addAlbum(id);
+      throw new HttpException(
+        'This album was successfully added to favourites',
+        HttpStatus.CREATED,
+      );
       throw new HttpException(
         'This album does not exist',
         HttpStatus.UNPROCESSABLE_ENTITY,
@@ -69,93 +55,49 @@ export class FavouritesController {
   }
 
   @Post('/artist/:id')
-  addArtistToFavs(@Param('id') id: string) {
+  async addArtistToFavs(@Param('id') id: string) {
     if (
       /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i.test(
         id,
       )
     ) {
-      const artist = this.dataBase.artists.find((el) => el.id === id);
-      if (artist) {
-        this.favouritesService.addArtist(id);
-        throw new HttpException(
-          'This artist was successfully added to favourites',
-          HttpStatus.CREATED,
-        );
-      }
-      throw new HttpException(
-        'This artist does not exist',
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
+      await this.favouritesService.addArtist(id);
     } else
       throw new HttpException('This id is not valid', HttpStatus.BAD_REQUEST);
   }
 
   @Delete('/track/:id')
-  deleteTrackFromFavs(@Param('id') id: string) {
+  async deleteTrackFromFavs(@Param('id') id: string) {
     if (
       /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i.test(
         id,
       )
     ) {
-      const track = this.dataBase.tracks.find((el) => el.id === id);
-      if (track) {
-        this.favouritesService.deleteTrack(id);
-        throw new HttpException(
-          'This track was successfully deleted from favourites',
-          HttpStatus.NO_CONTENT,
-        );
-      }
-      throw new HttpException(
-        'This track is not favourite',
-        HttpStatus.NOT_FOUND,
-      );
+      await this.favouritesService.deleteTrack(id);
     } else
       throw new HttpException('This id is not valid', HttpStatus.BAD_REQUEST);
   }
 
   @Delete('/album/:id')
-  deleteAlbumFromFavs(@Param('id') id: string) {
+  async deleteAlbumFromFavs(@Param('id') id: string) {
     if (
       /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i.test(
         id,
       )
     ) {
-      const album = this.dataBase.albums.find((el) => el.id === id);
-      if (album) {
-        this.favouritesService.deleteAlbum(id);
-        throw new HttpException(
-          'This album was successfully deleted from favourites',
-          HttpStatus.NO_CONTENT,
-        );
-      }
-      throw new HttpException(
-        'This album is not favourite',
-        HttpStatus.NOT_FOUND,
-      );
+      await this.favouritesService.deleteAlbum(id);
     } else
       throw new HttpException('This id is not valid', HttpStatus.BAD_REQUEST);
   }
 
   @Delete('/artist/:id')
-  deleteArtistFromFavs(@Param('id') id: string) {
+  async deleteArtistFromFavs(@Param('id') id: string) {
     if (
       /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i.test(
         id,
       )
     ) {
-      const artist = this.dataBase.artists.find((el) => el.id === id);
-      if (artist) {
-        this.favouritesService.deleteArtist(id);
-        throw new HttpException(
-          'This artist was successfully deleted from favourites',
-          HttpStatus.NO_CONTENT,
-        );
-      }
-      throw new HttpException(
-        'This artist is not favourite',
-        HttpStatus.NOT_FOUND,
-      );
+      await this.favouritesService.deleteArtist(id);
     } else
       throw new HttpException('This id is not valid', HttpStatus.BAD_REQUEST);
   }

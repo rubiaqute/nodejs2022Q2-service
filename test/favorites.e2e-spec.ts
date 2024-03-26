@@ -189,7 +189,7 @@ describe('Favorites (e2e)', () => {
       expect(artistSearchRes).toBeUndefined();
       expect(albumSearchRes).toBeUndefined();
       expect(trackSearchRes).toBeUndefined();
-    });
+    }, 10000);
   });
 
   describe('POST', () => {

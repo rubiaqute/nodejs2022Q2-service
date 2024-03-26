@@ -1,5 +1,15 @@
 # Home Library Service
 
+Для работы:
+1. Склонируйте репозиторий на локальный компьютер
+2. Выполните npm i
+3. Откройте на своем ПК docker desktop
+4. Выполните команду docker compose up. По данной команде будут созданы 2 образа, 2 контейнера  и 2 volume
+5. Для сканирование на уязвимости используйте скрипт npm run docker:scan
+6. ДО запуска тестов пожалуйста ПРОГОНИТЕ МИГРАЦИИ с командой typeorm:migration
+6. Для запуска тестов, убедитесь, что и сервер, и докер запущены. Выполните npm run test
+
+
 ## Prerequisites
 
 - Git - [Download & Install Git](https://git-scm.com/downloads).
